@@ -15,35 +15,26 @@ public class JpaMain {
         tx.begin();
 
         try{
-            Team team = new Team();
-            team.setName("A");
-            em.persist(team);
+            Child child1 = new Child();
+            Child child2 = new Child();
 
-            Member member = new Member();
-            member.setUsername("Lijar");
-            member.setTeam(team);
-            em.persist(member);
 
-            //it is automatically set in Member class setTeam()
-            //team.getMembers().add(member);
+            Parent parent = new Parent();
+            parent.addChild(child1);
+            parent.addChild(child2);
 
-            //with this the below(em.find)  is from DB query
-            //without this the below(em.find)  is from 1차 캐시 query
+            em.persist(parent);
+            
             em.flush();
             em.clear();
 
-            Member findMember = em.find(Member.class, member.getId());
-            System.out.println("findMember = " + findMember.getTeam().getName());
-
-            List<Member> members =  findMember.getTeam().getMembers();
-
-            for (Member m : members) {
-                System.out.println("m.getUsername() = " + m.getUsername());
-            }
+            Parent findParent = em.find(Parent.class, parent.getId());
+            em.remove(findParent);
 
             tx.commit();
         }catch(Exception e){
             tx.rollback();
+            e.printStackTrace();
         }finally {
             em.close();
         }
