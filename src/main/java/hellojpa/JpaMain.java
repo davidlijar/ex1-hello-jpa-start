@@ -3,6 +3,7 @@ package hellojpa;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Set;
 
 public class JpaMain {
 
@@ -15,23 +16,33 @@ public class JpaMain {
         tx.begin();
 
         try{
-            Child child1 = new Child();
-            Child child2 = new Child();
+            Member member = new Member();
+            member.setUsername("Member1");
+            member.setHomeAddress(new Address("city1", "street", "zipcode"));
 
+            member.getFavFoods().add("Noodle");
+            member.getFavFoods().add("Chicken");
 
-            Parent parent = new Parent();
-            parent.addChild(child1);
-            parent.addChild(child2);
+            member.getAddressHistory().add(new Address("old1", "street", "zipcode"));
+            member.getAddressHistory().add(new Address("old2", "street", "zipcode"));
 
-            em.persist(parent);
+            em.persist(member);
             
             em.flush();
             em.clear();
 
-            Parent findParent = em.find(Parent.class, parent.getId());
-            em.remove(findParent);
+            System.out.println("=============start============");
+            Member findMember = em.find(Member.class, member.getId());
 
-            tx.commit();
+            System.out.println("===========");
+            findMember.getAddressHistory().remove(new Address("old1", "street", "zipcode"));
+            //findMember.getAddressHistory().add(new Address("newCity23", "street", "zipcode"));
+
+
+
+
+
+            ;    tx.commit();
         }catch(Exception e){
             tx.rollback();
             e.printStackTrace();
